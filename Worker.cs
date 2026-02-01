@@ -2,6 +2,8 @@ using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Collections.Concurrent; // Untuk Thread-safe dictionary
 
 namespace CollectDataAudio
 {
@@ -11,6 +13,11 @@ namespace CollectDataAudio
         private readonly string _connectionString;
         private readonly List<LineConfig> _lines;
         private readonly string _baseFolderName;
+        private readonly int _checkIntervalMinutes;
+
+        // Cache untuk menyimpan kapan terakhir kali file dicek
+        // Key: Full Path File, Value: LastWriteTime dari file tersebut
+        private readonly ConcurrentDictionary<string, DateTime> _fileLastProcessed = new();
 
         public Worker(ILogger<Worker> logger, IConfiguration configuration)
         {
@@ -18,15 +25,24 @@ namespace CollectDataAudio
             _connectionString = configuration.GetConnectionString("ProductionDB");
             _lines = configuration.GetSection("MonitorSettings:Lines").Get<List<LineConfig>>();
             _baseFolderName = configuration["MonitorSettings:BaseFolder"] ?? "Data Server";
+            _checkIntervalMinutes = configuration.GetValue<int>("MonitorSettings:CheckIntervalMinutes, 60");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            _logger.LogInformation("Worker Started. Checking every 1 hour...");
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                var tasks = _lines.Select(line => ProcessLineAsync(line, stoppingToken));
-                await Task.WhenAll(tasks);
-                await Task.Delay(5000, stoppingToken);
+                if (_lines != null)
+                {
+                    // Jalankan proses untuk setiap Line yang terdaftar
+                    var tasks = _lines.Select(line => ProcessLineAsync(line, stoppingToken));
+                    await Task.WhenAll(tasks);
+                }
+
+                // Standby selama 10 detik sebelum siklus berikutnya
+                await Task.Delay(TimeSpan.FromMinutes(_checkIntervalMinutes), stoppingToken);
             }
         }
 
@@ -35,20 +51,42 @@ namespace CollectDataAudio
             if (string.IsNullOrEmpty(line.Ip)) return;
 
             string sourcePath = $@"\\{line.Ip}\{_baseFolderName}";
-            string processedPath = Path.Combine(sourcePath, "Processed");
 
             try
             {
                 if (!Directory.Exists(sourcePath)) return;
 
-                if (!Directory.Exists(processedPath)) Directory.CreateDirectory(processedPath);
-
-                var files = Directory.GetFiles(sourcePath, "*.txt");
+                // Ambil semua file CSV di folder tersebut
+                var files = Directory.GetFiles(sourcePath, "*.csv");
 
                 foreach (var file in files)
                 {
                     if (token.IsCancellationRequested) break;
-                    await ProcessSingleFile(file, line.TableName, processedPath);
+
+                    string fileName = Path.GetFileName(file);
+
+                    // 1. FILTER FILE: Format Bulan-Tahun (Contoh: December-2025_...)
+                    // Regex ini memastikan kita hanya mengambil file yang relevan sesuai screenshot
+                    if (Regex.IsMatch(fileName, @"^[A-Za-z]+-\d{4}_.*", RegexOptions.IgnoreCase))
+                    {
+                        // 2. CEK UPDATE: Apakah file ini berubah sejak terakhir kita cek?
+                        DateTime currentLastWrite = File.GetLastWriteTime(file);
+
+                        // Jika file sudah pernah dicek DAN waktu modifikasinya belum berubah, SKIP (Standby)
+                        if (_fileLastProcessed.TryGetValue(file, out DateTime lastProcessedTime))
+                        {
+                            if (currentLastWrite <= lastProcessedTime)
+                            {
+                                continue; // Tidak ada data baru di file ini
+                            }
+                        }
+
+                        // Jika ada perubahan atau file baru, proses datanya
+                        await ProcessSingleFile(file, line.TableName);
+
+                        // Update waktu terakhir diproses agar loop berikutnya tidak memproses ulang jika tidak ada perubahan
+                        _fileLastProcessed.AddOrUpdate(file, currentLastWrite, (key, oldValue) => currentLastWrite);
+                    }
                 }
             }
             catch (Exception ex)
@@ -57,95 +95,101 @@ namespace CollectDataAudio
             }
         }
 
-        private async Task ProcessSingleFile(string filePath, string tableName, string processedPath)
+        private async Task ProcessSingleFile(string filePath, string tableName)
         {
             string fileName = Path.GetFileName(filePath);
-            string destFile = Path.Combine(processedPath, fileName);
 
             try
             {
-                if (File.Exists(destFile))
+                // Gunakan FileShare.ReadWrite agar tidak error jika mesin sedang menulis ke file tersebut saat kita membacanya
+                using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var sr = new StreamReader(fs))
                 {
-                    DateTime sourceTime = File.GetLastWriteTime(filePath);
-                    DateTime destTime = File.GetLastWriteTime(destFile);
+                    string headerLine = await sr.ReadLineAsync(); // Baca Header (Skip baris 1)
 
-                    if (sourceTime <= destTime.AddSeconds(1)) return;
+                    var dataToInsert = new List<ProductionData>();
 
-                    _logger.LogInformation($"File {fileName} terupdate. Memproses data baru...");
-                }
-
-                string fileNameNoExt = Path.GetFileNameWithoutExtension(filePath);
-                DateTime fileDate;
-                if (!DateTime.TryParseExact(fileNameNoExt, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out fileDate))
-                {
-                    fileDate = DateTime.Now;
-                }
-
-                var lines = await File.ReadAllLinesAsync(filePath);
-                var dataToInsert = new List<ProductionData>();
-
-                using (IDbConnection db = new SqlConnection(_connectionString))
-                {
-                    foreach (var lineData in lines.Skip(1))
+                    string lineData;
+                    while ((lineData = await sr.ReadLineAsync()) != null)
                     {
                         if (string.IsNullOrWhiteSpace(lineData)) continue;
 
                         var parts = lineData.Split(',');
 
-                        if (parts.Length < 6) continue;
+                        // Validasi kolom minimal A-G (7 kolom)
+                        if (parts.Length < 7) continue;
 
-                        string model = parts[0].Trim();
-                        int target = TryParseInt(parts[1]);
-                        int actual = TryParseInt(parts[2]);
-                        // int ng = TryParseInt(parts[3]);
-                        int dailyPlan = TryParseInt(parts[4]);
-                        string serialNumber = parts[5].Trim();
-                        string checkQuery = "";
-                        object param = null;
-
-                        if (!string.IsNullOrEmpty(serialNumber))
+                        // --- MAPPING DATA ---
+                        // Kolom A: Tanggal
+                        string dateStr = parts[0].Trim();
+                        if (!DateTime.TryParseExact(dateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime recordDate))
                         {
-                            checkQuery = $"SELECT COUNT(1) FROM {tableName} WHERE SerialNumber = @SerialNumber";
-                            param = new { SerialNumber = serialNumber };
-                        }
-                        else
-                        {
-                            checkQuery = $"SELECT COUNT(1) FROM {tableName} WHERE DateTime = @DateTime AND Model = @Model AND Target = @Target AND Actual = @Actual";
-                            param = new { DateTime = fileDate, Model = model, Target = target, Actual = actual };
+                            continue;
                         }
 
-                        int exists = await db.ExecuteScalarAsync<int>(checkQuery, param);
+                        string lineName = parts[1].Trim();      // Kolom B: Line
+                        string model = parts[2].Trim();         // Kolom C: Model (SESUAI REQUEST)
+                        string defect = parts[3].Trim();        // Kolom D: Defect
+                        string reason = parts[4].Trim();        // Kolom E: Reason
+                        string station = parts[5].Trim();       // Kolom F: Station
+                        int quantity = TryParseInt(parts[6]);   // Kolom G: Quantity
 
-                        if (exists > 0) continue;
-
+                        // --- CEK LOGIC DB SEBELUM INSERT (Mencegah Duplikat) ---
+                        // Kita masukkan ke list dulu, nanti dicek/insert sekaligus atau per baris
                         dataToInsert.Add(new ProductionData
                         {
-                            DateTime = fileDate,
+                            DateTime = recordDate,
+                            Line = lineName,
                             Model = model,
-                            Target = target,
-                            Actual = actual,
-                            DailyPlan = dailyPlan,
-                            Weight = null,
-                            Efficiency = null,
-                            SerialNumber = serialNumber
+                            Defect = defect,
+                            Reason_Defect = reason,
+                            Station = station,
+                            Quantity = quantity
                         });
                     }
 
+                    // --- PROSES INSERT KE DATABASE ---
                     if (dataToInsert.Count > 0)
                     {
-                        string insertQuery = $@"
-                    INSERT INTO {tableName} 
-                    (DateTime, Model, DailyPlan, Target, Actual, Weight, Efficiency, SerialNumber)
-                    VALUES 
-                    (@DateTime, @Model, @DailyPlan, @Target, @Actual, @Weight, @Efficiency, @SerialNumber)";
+                        using (IDbConnection db = new SqlConnection(_connectionString))
+                        {
+                            foreach (var item in dataToInsert)
+                            {
+                                // Query untuk memastikan data ini belum ada di DB
+                                // Kita cek kombinasi unik: Waktu, Line, Model, Defect, Station, Reason
+                                string checkQuery = $@"
+                                    SELECT COUNT(1) FROM {tableName} 
+                                    WHERE DateTime = @DateTime 
+                                      AND Line = @Line 
+                                      AND Model = @Model 
+                                      AND Defect = @Defect 
+                                      AND Station = @Station
+                                      AND Reason_Defect = @Reason_Defect"; // Tambahkan Quantity di WHERE jika perlu sangat spesifik
 
-                        await db.ExecuteAsync(insertQuery, dataToInsert);
-                        _logger.LogInformation($"Berhasil insert {dataToInsert.Count} data dari {fileName}");
+                                int exists = await db.ExecuteScalarAsync<int>(checkQuery, item);
+
+                                // Jika data belum ada (0), baru kita Insert
+                                if (exists == 0)
+                                {
+                                    string insertQuery = $@"
+                                        INSERT INTO {tableName} 
+                                        (DateTime, Line, Model, Defect, Reason_Defect, Station, Quantity)
+                                        VALUES 
+                                        (@DateTime, @Line, @Model, @Defect, @Reason_Defect, @Station, @Quantity)";
+
+                                    await db.ExecuteAsync(insertQuery, item);
+                                    _logger.LogInformation($"New Data Inserted: {item.Model} - {item.Defect}");
+                                }
+                                // Jika exists > 0, worker diam saja (standby/skip) karena data sudah ada
+                            }
+                        }
                     }
                 }
-
-                File.Copy(filePath, destFile, true); 
-                File.SetLastWriteTime(destFile, File.GetLastWriteTime(filePath));
+            }
+            catch (IOException ioEx)
+            {
+                // Handle jika file sedang dikunci total oleh proses lain
+                _logger.LogWarning($"File {fileName} sedang digunakan proses lain, akan dicoba lagi nanti. Info: {ioEx.Message}");
             }
             catch (Exception ex)
             {
@@ -153,7 +197,6 @@ namespace CollectDataAudio
             }
         }
 
-        // Helper function biar gak error kalau datanya kosong/bukan angka
         private int TryParseInt(string input)
         {
             if (int.TryParse(input, out int result)) return result;

@@ -3,13 +3,13 @@
     public class ProductionData
     {
         public DateTime DateTime { get; set; } 
-        public string Model { get; set; }      
-        public int DailyPlan { get; set; }  
-        public int Target { get; set; }    
-        public int Actual { get; set; } 
-        public decimal? Weight { get; set; }
-        public decimal? Efficiency { get; set; }
-        public string SerialNumber { get; set; }
+        public string Line { get; set; }      
+        public string Model { get; set; }  
+        public string Defect { get; set; }    
+        public string Reason_Defect { get; set; } 
+        public string Station { get; set; }
+        public int Quantity { get; set; }
+        
     }
 
     public class LineConfig
