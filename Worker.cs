@@ -1,3 +1,4 @@
+//ini logika untuk DEFECT-AUDIO- Logika ambil data programmnya ada di Github DEFECT-AUDIO
 using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;
