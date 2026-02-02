@@ -109,13 +109,13 @@ namespace CollectDataAudio
                     string headerLine = await sr.ReadLineAsync(); // Baca Header (Skip baris 1)
 
                     var dataToInsert = new List<ProductionData>();
-
+                    _logger.LogInformation($"Sedang membaca file: {fileName}");
                     string lineData;
                     while ((lineData = await sr.ReadLineAsync()) != null)
                     {
                         if (string.IsNullOrWhiteSpace(lineData)) continue;
 
-                        var parts = lineData.Split(';');
+                        var parts = lineData.Contains(';') ? lineData.Split(';') : lineData.Split(',');
 
                         // Validasi kolom minimal A-G (7 kolom)
                         if (parts.Length < 7) continue;
@@ -123,15 +123,10 @@ namespace CollectDataAudio
                         // --- MAPPING DATA ---
                         // Kolom A: Tanggal
                         string dateStr = parts[0].Trim();
-                        // Ubah format dari "dd/MM/yyyy" menjadi "dd-MM-yyyy" sesuai data notepad Anda
-                        if (!DateTime.TryParseExact(dateStr, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime recordDate))
+                        if (!DateTime.TryParseExact(dateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime recordDate))
                         {
-                            // Coba backup jika format sewaktu-waktu berubah menggunakan /
-                            if (!DateTime.TryParseExact(dateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out recordDate))
-                            {
-                                _logger.LogWarning($"Format tanggal tidak valid: {dateStr}");
-                                continue;
-                            }
+                            // Fallback ke format strip jika perlu
+                            DateTime.TryParseExact(dateStr, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out recordDate);
                         }
 
                         string lineName = parts[1].Trim();      // Kolom B: Line

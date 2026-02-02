@@ -50,8 +50,7 @@
               "RelativeToolTip": ".gitignore",
               "ViewState": "AQIAAD8AAAAAAAAAAAAAACcAAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-02-01T04:48:52.383Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-01T04:48:52.383Z"
             },
             {
               "$type": "Document",
@@ -71,9 +70,9 @@
               "Title": "Worker.cs",
               "DocumentMoniker": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs",
               "RelativeDocumentMoniker": "Worker.cs",
-              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs",
-              "RelativeToolTip": "Worker.cs",
-              "ViewState": "AQIAAJ8AAAAAAAAAAAAUwJMAAAAxAAAA",
+              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs*",
+              "RelativeToolTip": "Worker.cs*",
+              "ViewState": "AQIAAHMAAAAAAAAAAAAQwH0AAACLAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-04T03:46:48.903Z",
               "EditorCaption": ""
@@ -88,8 +87,7 @@
               "RelativeToolTip": "ProductionData.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-04T03:45:12.059Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-04T03:45:12.059Z"
             },
             {
               "$type": "Document",
@@ -99,7 +97,7 @@
               "RelativeDocumentMoniker": "appsettings.json",
               "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\appsettings.json",
               "RelativeToolTip": "appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAdAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABQAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2025-12-04T03:36:06.088Z",
               "EditorCaption": ""
