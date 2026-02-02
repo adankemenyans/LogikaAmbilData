@@ -115,7 +115,7 @@ namespace CollectDataAudio
                     {
                         if (string.IsNullOrWhiteSpace(lineData)) continue;
 
-                        var parts = lineData.Split(',');
+                        var parts = lineData.Split(';');
 
                         // Validasi kolom minimal A-G (7 kolom)
                         if (parts.Length < 7) continue;
@@ -123,9 +123,15 @@ namespace CollectDataAudio
                         // --- MAPPING DATA ---
                         // Kolom A: Tanggal
                         string dateStr = parts[0].Trim();
-                        if (!DateTime.TryParseExact(dateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime recordDate))
+                        // Ubah format dari "dd/MM/yyyy" menjadi "dd-MM-yyyy" sesuai data notepad Anda
+                        if (!DateTime.TryParseExact(dateStr, "dd-MM-yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime recordDate))
                         {
-                            continue;
+                            // Coba backup jika format sewaktu-waktu berubah menggunakan /
+                            if (!DateTime.TryParseExact(dateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out recordDate))
+                            {
+                                _logger.LogWarning($"Format tanggal tidak valid: {dateStr}");
+                                continue;
+                            }
                         }
 
                         string lineName = parts[1].Trim();      // Kolom B: Line
@@ -140,7 +146,7 @@ namespace CollectDataAudio
                         dataToInsert.Add(new ProductionData
                         {
                             DateTime = recordDate,
-                            Line = lineName,
+                            MachineCode = lineName,
                             Model = model,
                             Defect = defect,
                             Reason_Defect = reason,
@@ -161,7 +167,7 @@ namespace CollectDataAudio
                                 string checkQuery = $@"
                                     SELECT COUNT(1) FROM {tableName} 
                                     WHERE DateTime = @DateTime 
-                                      AND Line = @Line 
+                                      AND MachineCode = @MachineCode 
                                       AND Model = @Model 
                                       AND Defect = @Defect 
                                       AND Station = @Station
@@ -174,9 +180,9 @@ namespace CollectDataAudio
                                 {
                                     string insertQuery = $@"
                                         INSERT INTO {tableName} 
-                                        (DateTime, Line, Model, Defect, Reason_Defect, Station, Quantity)
+                                        (DateTime, MachineCode, Model, Defect, Reason_Defect, Station, Quantity)
                                         VALUES 
-                                        (@DateTime, @Line, @Model, @Defect, @Reason_Defect, @Station, @Quantity)";
+                                        (@DateTime, @MachineCode, @Model, @Defect, @Reason_Defect, @Station, @Quantity)";
 
                                     await db.ExecuteAsync(insertQuery, item);
                                     _logger.LogInformation($"New Data Inserted: {item.Model} - {item.Defect}");
