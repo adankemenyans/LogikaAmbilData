@@ -70,9 +70,9 @@
               "Title": "Worker.cs",
               "DocumentMoniker": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs",
               "RelativeDocumentMoniker": "Worker.cs",
-              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs*",
-              "RelativeToolTip": "Worker.cs*",
-              "ViewState": "AQIAAHMAAAAAAAAAAAAQwH0AAACLAAAA",
+              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs",
+              "RelativeToolTip": "Worker.cs",
+              "ViewState": "AQIAAKQAAAAAAAAAAAAIwH0AAACLAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-04T03:46:48.903Z",
               "EditorCaption": ""
@@ -99,8 +99,7 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABQAAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-12-04T03:36:06.088Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-04T03:36:06.088Z"
             }
           ]
         },

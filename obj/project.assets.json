@@ -2966,9 +2966,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\CollectDataAudio.csproj",
-      "projectName": "CollectDataAudio",
-      "projectPath": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\CollectDataAudio.csproj",
+      "projectUniqueName": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\DefectDataAudio.csproj",
+      "projectName": "DefectDataAudio",
+      "projectPath": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\DefectDataAudio.csproj",
       "packagesPath": "C:\\Users\\70N0141\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\obj\\",
       "projectStyle": "PackageReference",

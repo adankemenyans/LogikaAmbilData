@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "mG0ob9f7qKE=",
+  "dgSpecHash": "Ad1DVRTgdHw=",
   "success": true,
-  "projectFilePath": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\CollectDataAudio.csproj",
+  "projectFilePath": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\DefectDataAudio.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\70N0141\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\70N0141\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",
