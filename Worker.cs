@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent; // Untuk Thread-safe dictionary
 
-namespace CollectDataAudio
+namespace DefectDataAudio
 {
     public class Worker : BackgroundService
     {
@@ -26,7 +26,7 @@ namespace CollectDataAudio
             _connectionString = configuration.GetConnectionString("ProductionDB");
             _lines = configuration.GetSection("MonitorSettings:Lines").Get<List<LineConfig>>();
             _baseFolderName = configuration["MonitorSettings:BaseFolder"] ?? "Data Server";
-            _checkIntervalMinutes = configuration.GetValue<int>("MonitorSettings:CheckIntervalMinutes, 60");
+            _checkIntervalMinutes = configuration.GetValue<int>("MonitorSettings:CheckIntervalMinutes", 60);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -35,13 +35,21 @@ namespace CollectDataAudio
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                if (_lines != null)
+                try
                 {
-                    // Jalankan proses untuk setiap Line yang terdaftar
-                    var tasks = _lines.Select(line => ProcessLineAsync(line, stoppingToken));
-                    await Task.WhenAll(tasks);
+                    if (_lines != null)
+                    {
+                        // Jalankan proses untuk setiap Line yang terdaftar
+                        var tasks = _lines.Select(line => ProcessLineAsync(line, stoppingToken));
+                        await Task.WhenAll(tasks);
+                    }
                 }
-
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Fatal Error in Loop : {ex.Message}");
+                }
+                int delayMinutes = _checkIntervalMinutes > 0 ? _checkIntervalMinutes : 60;
+                _logger.LogInformation("Cycle Berhasil. Waiting for 60 minutes...", delayMinutes);
                 // Standby selama 10 detik sebelum siklus berikutnya
                 await Task.Delay(TimeSpan.FromMinutes(_checkIntervalMinutes), stoppingToken);
             }

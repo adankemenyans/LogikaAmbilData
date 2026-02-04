@@ -1,11 +1,11 @@
-using CollectDataAudio;
+using DefectDataAudio;
 using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddWindowsService(options =>
 {
-    options.ServiceName = "CollectDataAudio";
+    options.ServiceName = "DefectDataAudio";
 });
 
 builder.Services.AddHostedService<Worker>();

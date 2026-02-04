@@ -1,4 +1,4 @@
-﻿namespace CollectDataAudio
+﻿namespace DefectDataAudio
 {
     public class ProductionData
     {

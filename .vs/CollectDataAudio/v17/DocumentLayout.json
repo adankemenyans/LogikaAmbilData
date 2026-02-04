@@ -11,16 +11,16 @@
       "RelativeMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|c:\\users\\70n0141\\source\\repos\\defect_audio\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|c:\\users\\70n0141\\source\\repos\\defect_audio\\productiondata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|solutionrelative:productiondata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|c:\\users\\70n0141\\source\\repos\\defect_audio\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|solutionrelative:.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|c:\\users\\70n0141\\source\\repos\\defect_audio\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F9947E50-6919-4636-9645-7A30D7DB4E95}|CollectDataAudio.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,27 +42,29 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": ".gitignore",
               "DocumentMoniker": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\.gitignore",
               "RelativeDocumentMoniker": ".gitignore",
               "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\.gitignore",
               "RelativeToolTip": ".gitignore",
-              "ViewState": "AQIAAD8AAAAAAAAAAAAAACcAAAAQAAAA",
+              "ViewState": "AQIAADwAAAAAAAAAAIBJwCcAAAAQAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-02-01T04:48:52.383Z"
+              "WhenOpened": "2026-02-01T04:48:52.383Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAVAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-04T04:11:02.059Z"
+              "WhenOpened": "2025-12-04T04:11:02.059Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -70,24 +72,25 @@
               "Title": "Worker.cs",
               "DocumentMoniker": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs",
               "RelativeDocumentMoniker": "Worker.cs",
-              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs",
-              "RelativeToolTip": "Worker.cs",
-              "ViewState": "AQIAAKQAAAAAAAAAAAAIwH0AAACLAAAA",
+              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\Worker.cs*",
+              "RelativeToolTip": "Worker.cs*",
+              "ViewState": "AQIAABQAAAAAAAAAAAAwwCwAAAAVAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-04T03:46:48.903Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "ProductionData.cs",
               "DocumentMoniker": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\ProductionData.cs",
               "RelativeDocumentMoniker": "ProductionData.cs",
               "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\ProductionData.cs",
               "RelativeToolTip": "ProductionData.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAiAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAZAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-04T03:45:12.059Z"
+              "WhenOpened": "2025-12-04T03:45:12.059Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -95,11 +98,12 @@
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABQAAAAFAAAA",
+              "ToolTip": "C:\\Users\\70N0141\\source\\repos\\DEFECT_AUDIO\\appsettings.json*",
+              "RelativeToolTip": "appsettings.json*",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAdAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-12-04T03:36:06.088Z"
+              "WhenOpened": "2025-12-04T03:36:06.088Z",
+              "EditorCaption": ""
             }
           ]
         },
